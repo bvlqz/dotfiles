@@ -1,28 +1,41 @@
--- lua/config/keymaps.lua
+vim.g.mapleader = " "
+-- While in normal mode, if I press <leader>pv it will execute vim.cmd.Ex command
+-- proyect view
+vim.keymap.set("n", "<leader>pv", vim.cmd.Ex, { desc = "Project View" })
 
--- Telescope key mappings
-local builtin = require('telescope.builtin')
+-- Telescope
+local telescope = require("telescope.builtin")
+vim.keymap.set("n", "<leader>pf", telescope.find_files, { desc = "Project Find" })
+vim.keymap.set("n", "<leader>ps", function()
+    telescope.grep_string({ search = vim.fn.input("grep > ") })
+end, { desc = "Project Search" })
 
--- Project File
-vim.keymap.set('n', '<leader>pf', builtin.find_files, { desc = 'Telescope find files' })
--- Fuzzy Find, Just git files
-vim.keymap.set('n', '<C-p>', builtin.git_files, { desc = 'All file Search' })
--- Grep
-vim.keymap.set('n', '<leader>ps', function()
-    builtin.grep_string({
-        search = vim.fn.input('Grep String > ')
-    })
-end)
+vim.keymap.set("n", "<leader>pg", function()
+    require('telescope.builtin').live_grep()
+end, { desc = "Project Grep" })
 
--- Undo Tree
-vim.keymap.set('n', '<leader>u', vim.cmd.UndotreeToggle, { desc = 'Undo Tree' })
+-- UndoTree
+vim.keymap.set("n", "<leader>u", vim.cmd.UndotreeToggle, { desc = "Undo Tree Toggle" })
 
--- File explorer
-vim.keymap.set('n', '<leader>e', ':Neotree<CR>', { desc = 'Open Netrw' })
+-- Ctrl + D (Half page jump Down) to leave the cursor centered on screen
+vim.keymap.set("n", "<C-d>", "<C-d>zz")
+-- Ctrl + U (Half page jump Up) to leave the cursor centered on screen
+vim.keymap.set("n", "<C-u>", "<C-u>zz")
 
--- fzf-lua key mappings
-vim.keymap.set('n', '<leader>ff', require('fzf-lua').files, { desc = 'Find Files' })
-vim.keymap.set('n', '<leader>fb', require('fzf-lua').buffers, { desc = 'Find Buffers' })
-vim.keymap.set('n', '<leader>fl', require('fzf-lua').lines, { desc = 'Find Lines' })
-vim.keymap.set('n', '<leader>fg', require('fzf-lua').grep, { desc = 'Grep Search' })
-vim.keymap.set('n', '<leader>gf', require('fzf-lua').git_files, { desc = 'Git Files' })
+-- Search terms to stay in the middle
+vim.keymap.set("n", "n", "nzzzv")
+vim.keymap.set("n", "N", "Nzzzv")
+
+-- Yank to system clipboard
+vim.keymap.set("n", "<leader>y", "\"+y", { desc = "Yank to system clipboard" })
+vim.keymap.set("n", "<leader>Y", "\"+Y", { desc = "Yank line to system clipboard" })
+vim.keymap.set("v", "<leader>y", "\"+y", { desc = "Yank to system clipboard" })
+
+-- Do not enter Ex Mode - Never :)
+vim.keymap.set("n", "Q", "<nop>")
+
+-- Replace current word
+vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
+    { desc = "Select/Replace Word on Cursor" })
+
+-- LSP

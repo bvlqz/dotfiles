@@ -1,5 +1,5 @@
 -- lua/plugins/treesitter.lua
-local M = {
+return {
     "nvim-treesitter/nvim-treesitter",
     build = function()
         require("nvim-treesitter.install").update({
@@ -10,7 +10,7 @@ local M = {
         local configs = require("nvim-treesitter.configs")
 
         configs.setup({
-            ensure_installed = {"lua", "vim", "vimdoc", "query", "elixir", "heex", "javascript", "html"},
+            ensure_installed = {"lua", "vim", "vimdoc", "query", "elixir", "heex", "javascript", "html", "typescript"},
             sync_install = false,
             highlight = {
                 enable = true
@@ -22,4 +22,3 @@ local M = {
     end
 }
 
-return {M}
