@@ -1,5 +1,6 @@
 -- Centralized on_attach function with keymaps
 local function on_attach(client, bufnr)
+    print("LSP attached to buffer", bufnr)
     -- Keymaps for LSP functionality
 
     local opts = { noremap = true, silent = true, buffer = bufnr }
@@ -16,17 +17,19 @@ local function on_attach(client, bufnr)
     -- Format code with description for "Format"
     vim.keymap.set("n", "<leader>f", function()
         vim.lsp.buf.format({ async = true })                 -- Format code
-    end, vim.tbl_extend("force", opts, { desc = "Format" })) -- Add description here
+    end, vim.tbl_extend("force", opts, { desc = "Format" }))
 end
 
 -- Setup Mason and LSP
 require("mason").setup({
     ensure_installed = { "stylua", "lua_ls", "pyright", "clangd", "gopls" } -- Ensure required tools are installed
 })
+print("Mason setup complete")
 
 require("mason-lspconfig").setup({
     ensure_installed = { "lua_ls", "pyright", "clangd", "gopls" }, -- Ensure servers are installed
 })
+print("Mason-LSPConfig setup complete")
 
 -- Configure LSP servers
 require("mason-lspconfig").setup_handlers({
@@ -66,6 +69,7 @@ require("mason-lspconfig").setup_handlers({
         end
 
         require("lspconfig")[server_name].setup(opts)
+        print("LSP server setup complete for", server_name)
     end,
 })
 
@@ -80,12 +84,14 @@ require("lspconfig").pyright.setup({
         },
     },
 })
+print("Python LSP (pyright) setup complete")
 
 -- C++ LSP (clangd)
 require("lspconfig").clangd.setup({
     -- No need to redefine capabilities here since it's handled centrally
     cmd = { "clangd", "--background-index", "--clang-tidy" }, -- Enable Clang-Tidy
 })
+print("C++ LSP (clangd) setup complete")
 
 -- Go LSP (gopls)
 require("lspconfig").gopls.setup({
@@ -99,3 +105,4 @@ require("lspconfig").gopls.setup({
         },
     },
 })
+print("Go LSP (gopls) setup complete")

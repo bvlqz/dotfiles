@@ -1,6 +1,6 @@
 vim.g.mapleader = " "
 -- While in normal mode, if I press <leader>pv it will execute vim.cmd.Ex command
--- proyect view
+-- project view
 vim.keymap.set("n", "<leader>pv", vim.cmd.Ex, { desc = "Project View" })
 
 -- Telescope
