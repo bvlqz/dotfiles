@@ -15,19 +15,45 @@ fill_line() {
     printf '%*s\n' "$columns" '' | tr ' ' '-'
 }
 
-setopt prompt_subst
-precmd_prompt() {
-    local git_info=""  # Placeholder for Git info
-    local git_status
-
-    # Check for Git repository
-    git_status=$(git status --porcelain=v1 2>/dev/null || true) # Prevent errors in non-Git directories
-    if [[ -n $git_status ]]; then
+# Git status function using Oh My Zsh Git plugin
+get_git_status() {
+    if git rev-parse --is-inside-work-tree &>/dev/null; then
         local repo_name=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)")
         local branch_name=$(git symbolic-ref --short HEAD 2>/dev/null)
-        local changes=$(echo "$git_status" | wc -l)
-        git_info="${repo_name} on ${branch_name} (${changes} changes)"
+
+        # Changes
+        local staged=$(git diff --cached --name-only | wc -l | tr -d ' ')
+        local unstaged=$(git diff --name-only | wc -l | tr -d ' ')
+        local untracked=$(git ls-files --others --exclude-standard | wc -l | tr -d ' ')
+        local changes=$((staged + unstaged))
+        local changes_text="${staged} staged, ${unstaged} unstaged"
+        [[ $untracked -gt 0 ]] && changes_text="${changes_text}, ${untracked} untracked"
+        [[ $changes -eq 1 ]] && changes_text="${changes_text} change" || changes_text="${changes_text} changes"
+
+        # Ahead/Behind
+        local ahead=$(git rev-list --count @{u}..HEAD 2>/dev/null || echo "0")
+        local behind=$(git rev-list --count HEAD..@{u} 2>/dev/null || echo "0")
+
+        # Upstream Branch
+        local upstream=$(git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null || echo "")
+        [[ -n $upstream ]] && branch_name="${branch_name} (${upstream})"
+
+        # Dirty State
+        local is_dirty=""
+        if [[ $changes -gt 0 ]]; then
+            is_dirty=", uncommitted"
+        fi
+
+        # Final Output
+        echo "${repo_name} on branch ${branch_name}: ↑${ahead} ↓${behind} (${changes_text}${is_dirty})"
     fi
+}
+
+
+setopt prompt_subst
+precmd_prompt() {
+    local git_info
+    git_info=$(get_git_status)
 
     # Prepare clock on the right
     local clock_right="$(date +'%H:%M:%S')"
@@ -58,8 +84,6 @@ precmd_prompt() {
         PROMPT+=$'\n'
     fi
     PROMPT+="$ "
-
-
 }
 
 # Register the prompt function
