@@ -60,7 +60,8 @@ precmd_prompt() {
     local clock_length=${#clock_right}
 
     # Prepare left prompt text
-    local prompt_left="${USER} at Mac Mini"
+    local host="mini"
+    local prompt_left="${USER}@${host}:$(pwd)"
     local left_length=${#prompt_left}
 
     # Calculate spacing for center alignment
