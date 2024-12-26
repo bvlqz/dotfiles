@@ -29,19 +29,37 @@ precmd_prompt() {
         git_info="${repo_name} on ${branch_name} (${changes} changes)"
     fi
 
-    # Format clock aligned to the right
-    local clock_right=$(printf '%*s' "$COLUMNS" "[$(date +'%H:%M:%S')]")
+    # Prepare clock on the right
+    local clock_right="$(date +'%H:%M:%S')"
+    local clock_length=${#clock_right}
 
-    # Build prompt
-    
-    PROMPT="$(fill_line)"
-    PROMPT+="${USER}@ Mac Mini ${clock_right}"
+    # Prepare left prompt text
+    local prompt_left="${USER} at Mac Mini"
+    local left_length=${#prompt_left}
+
+    # Calculate spacing for center alignment
+    local total_length=$((left_length + clock_length)) # 2 for the gap
+    local padding_length=$((COLUMNS - total_length))
+
+    # Add spaces between left and right
+    local prompt_columns=$(printf '%*s' "$padding_length" '')
+
+    # Combine the full prompt
+    local prompt_full="${prompt_left}${prompt_columns}${clock_right}"
+
+    # Build PROMPT
+    PROMPT=$'\n'
+    PROMPT+="$(fill_line)"
+    PROMPT+=$'\n'
+    PROMPT+="${prompt_full}"
+    PROMPT+=$'\n'
     if [[ -n $git_info ]]; then
         PROMPT+="${git_info}"
         PROMPT+=$'\n'
     fi
-    PROMPT+="${USER}@${HOSTNAME} ${clock_right}"
-    PROMPT+=$'\n$ '
+    PROMPT+="$ "
+
+
 }
 
 # Register the prompt function
