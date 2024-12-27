@@ -17,8 +17,10 @@ trim() {
 
 # Function to draw a continuous line
 fill_line() {
-    printf '%*s\n' "$COLUMNS" '' | tr ' ' '-'
+    local columns=$COLUMNS
+    echo "%F{0}$(printf '%*s' "$columns" '' | tr ' ' '-')%f"
 }
+
 
 # Git status function
 get_git_status() {
