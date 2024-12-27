@@ -12,10 +12,9 @@ plugins=(git)
 # Function to draw a continuous line
 fill_line() {
     local columns=$COLUMNS
-    printf '%*s\n' "$columns" '' | tr ' ' '-'
+    echo "%F{0}$(printf '%*s' "$columns" '' | tr ' ' '-')%f"
 }
 
-# Git status function using Oh My Zsh Git plugin
 get_git_status() {
     if git rev-parse --is-inside-work-tree &>/dev/null; then
         local repo_name=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)")
@@ -41,14 +40,13 @@ get_git_status() {
         # Dirty State
         local is_dirty=""
         if [[ $changes -gt 0 ]]; then
-            is_dirty=", uncommitted"
+            is_dirty=", %F{005}uncommitted%f"
         fi
 
-        # Final Output
-        echo "${repo_name} on branch ${branch_name}: ↑${ahead} ↓${behind} (${changes_text}${is_dirty})"
+        # Final Output with colors
+        echo "%F{013}${repo_name}%f on branch %F{211}${branch_name}%f: ↑%F{010}${ahead}%f ↓%F{009}${behind}%f (${changes_text}${is_dirty})"
     fi
 }
-
 
 setopt prompt_subst
 precmd_prompt() {
@@ -56,17 +54,17 @@ precmd_prompt() {
     git_info=$(get_git_status)
 
     # Prepare clock on the right
-    local clock_right="$(date +'%H:%M:%S')"
+    local clock_right="%F{011}$(date +'%H:%M:%S')%f"
     local clock_length=${#clock_right}
 
     # Prepare left prompt text
     local host="mini"
-    local prompt_left="${USER}@${host}:$(pwd)"
+    local prompt_left="%F{010}${USER}@${host}%f:%F{012}$(pwd)%f"
     local left_length=${#prompt_left}
 
     # Calculate spacing for center alignment
-    local total_length=$((left_length + clock_length)) # 2 for the gap
-    local padding_length=$((COLUMNS - total_length))
+    local total_length=$((left_length + clock_length))
+    local padding_length=$((COLUMNS - total_length + 27)) #27 because of extra color characters TODO
 
     # Add spaces between left and right
     local prompt_columns=$(printf '%*s' "$padding_length" '')
@@ -84,7 +82,7 @@ precmd_prompt() {
         PROMPT+="${git_info}"
         PROMPT+=$'\n'
     fi
-    PROMPT+="$ "
+    PROMPT+="%F{015}$%f "
 }
 
 # Register the prompt function
