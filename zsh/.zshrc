@@ -27,7 +27,7 @@ get_git_status() {
         local changes=$((staged + unstaged))
         local changes_text="${staged} staged, ${unstaged} unstaged"
         [[ $untracked -gt 0 ]] && changes_text="${changes_text}, ${untracked} untracked"
-        [[ $changes -eq 1 ]] && changes_text="${changes_text} change" || changes_text="${changes_text} changes"
+        [[ $changes -eq 1 ]] && changes_text="${changes_text} change(s)" || changes_text="${changes_text} changes"
 
         # Ahead/Behind
         local ahead=$(git rev-list --count @{u}..HEAD 2>/dev/null || echo "0")
@@ -64,8 +64,10 @@ precmd_prompt() {
 
     # Calculate spacing for center alignment
     local total_length=$((left_length + clock_length))
-    local padding_length=$((COLUMNS - total_length + 27)) #27 because of extra color characters TODO
 
+    # TODO: Filter extra color characters (27)
+    local padding_length=$((COLUMNS - total_length + 27))
+    
     # Add spaces between left and right
     local prompt_columns=$(printf '%*s' "$padding_length" '')
 
