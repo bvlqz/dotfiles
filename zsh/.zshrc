@@ -38,11 +38,13 @@ get_git_status() {
         (( unstaged > 0 )) && changes+="${unstaged} unstaged, "
         (( untracked > 0 )) && changes+="${untracked} untracked"
         changes=${changes%, } # Remove trailing comma
-            
-        #echo "staged='$staged', unstaged='$unstaged', untracked='$untracked'"
 
         local dirty_status=""
         (( staged + unstaged > 0 )) && dirty_status="%F{005}uncommitted%f"
+
+        if [[ -z "$changes" && -z "$dirty_status" ]]; then
+            changes="working tree clean"
+        fi
 
         echo "%F{013}${repo_name}%f on branch %F{211}${branch_name}%f: ↑%F{010}${ahead}%f ↓%F{009}${behind}%f (${changes}${dirty_status:+, ${dirty_status}})"
     fi
