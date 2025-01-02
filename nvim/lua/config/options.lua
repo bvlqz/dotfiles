@@ -1,29 +1,41 @@
--- Enable line numbers
-vim.opt.number = true
+-- Platform-specific settings
+local uname = vim.loop.os_uname()
+local is_windows = uname.sysname == "Windows_NT"
+local is_mac = uname.sysname == "Darwin"
+local is_linux = uname.sysname == "Linux"
 
--- Enable relative line numbers
-vim.opt.relativenumber = true
+-- Common settings
+vim.opt.number = true -- Enable line numbers
+vim.opt.relativenumber = true -- Enable relative line numbers
 
--- Indents
+-- Indentation
 vim.opt.tabstop = 4
 vim.opt.softtabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
 
--- No line wrap
+-- Disable line wrap
 vim.opt.wrap = false
 
--- No backups
+-- Disable swap and backup files
 vim.opt.swapfile = false
 vim.opt.backup = false
--- UndoTree to have access to long running undos
-vim.opt.undodir = os.getenv("HOME") .. "/.vim/undodir"
-vim.opt.undofile = true
 
--- Incremental Search
+-- Enable undofile for persistent undo
+vim.opt.undofile = true
+-- Platform specific UndoTree settings: Long running undos
+if is_windows then
+    print("Setting up UndoTree for Windows")
+    vim.opt.undodir = os.getenv("APPDATA") .. "\\nvim\\undodir"
+
+elseif is_mac or is_linux then
+    print("Setting up UndoTree for Mac/Linux")
+    vim.opt.undodir = os.getenv("HOME") .. "/.vim/undodir"
+end
+
+-- Incremental search
 vim.opt.hlsearch = false
 vim.opt.incsearch = true
 
--- Other
+-- Highlight column at 80 characters
 vim.opt.colorcolumn = "80"
-
