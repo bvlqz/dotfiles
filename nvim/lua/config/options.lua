@@ -38,4 +38,4 @@ vim.opt.hlsearch = false
 vim.opt.incsearch = true
 
 -- Highlight column at 80 characters
-vim.opt.colorcolumn = "80"
+-- vim.opt.colorcolumn = "80"
